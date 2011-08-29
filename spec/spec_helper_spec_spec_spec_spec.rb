@@ -24,23 +24,4 @@ describe "Spec Helper" do
     Rails.application.config.kittens = "Small Cats"
     Rails.application.config.kittens.should == "Small Cats"
   end
-  
-  describe "resetting fake Rails environment between tests" do
-    after(:each) do
-      ignoring_warnings do
-        Rails = nil
-        ActionController = nil
-      end
-    end
-    
-    it "resets Rails before this test" do
-      ActionController.should_not be_nil
-      Rails.application.should_not be_nil
-    end    
-    
-    it "resets Rails before this test too" do
-      ActionController.should_not be_nil
-      Rails.application.should_not be_nil
-    end
-  end
 end

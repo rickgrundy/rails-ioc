@@ -1,11 +1,3 @@
-def ignoring_warnings
-  verbosity = $VERBOSE
-  $VERBOSE = nil
-  yield
-ensure
-  $VERBOSE = verbosity
-end
-
 class GlobalCounter
   def self.zero!
     @count = 0
@@ -17,6 +9,12 @@ class GlobalCounter
   
   def self.count
     @count
+  end
+end
+
+RSpec.configure do |config|
+  config.before(:each) do
+    GlobalCounter.zero!
   end
 end
 
@@ -34,29 +32,15 @@ class AdHocObject
   end
 end
 
-module FakeActionController
+Rails = AdHocObject.new
+Rails.application = AdHocObject.new
+Rails.application.config = AdHocObject.new
+Rails.root = File.expand_path("../fixtures", __FILE__)
+
+module ActionController
   class Base
     def self.before_filter(method_name); end 
   end
 end
 
-def reset_fake_dependencies!
-  ignoring_warnings do
-    Object.send(:const_set, :Rails, AdHocObject.new)
-    Rails.application = AdHocObject.new
-    Rails.application.config = AdHocObject.new
-    Rails.root = File.expand_path("../fixtures", __FILE__)
-
-    Object.send(:const_set, :ActionController, FakeActionController)
-  end
-end
-
-RSpec.configure do |config|
-  config.before(:each) do
-    GlobalCounter.zero!
-    reset_fake_dependencies!
-  end
-end
-
-reset_fake_dependencies!
 require File.expand_path("../../lib/rails-ioc.rb", __FILE__)

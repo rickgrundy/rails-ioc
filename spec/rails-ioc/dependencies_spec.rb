@@ -99,8 +99,7 @@ describe RailsIOC::Dependencies do
   describe "controllers" do
     it "stores controller dependencies for later injection by Rails' before_filter" do      
       RailsIOC::Dependencies.define do
-        prototype :second_node, TestListNode
-        singleton :first_node, TestListNode, ref(:second_node)
+        singleton :first_node, TestListNode
         
         controller TestController, {
            foo: ref(:first_node),
@@ -115,13 +114,27 @@ describe RailsIOC::Dependencies do
       controller.foo.should === RailsIOC::Dependencies.ref(:first_node)
       controller.bar.should == "The Sheep Says Bar"
     end
+    
+    it "merges overriden controller dependencies" do
+      RailsIOC::Dependencies.define do
+        controller TestController, {
+           foo: "original foo",
+           bar: "original bar"
+        }
+      end
+      
+      RailsIOC::Dependencies.define do
+        controller TestController, {
+           bar: "override bar"
+        }
+      end
+      
+      RailsIOC::Dependencies.controllers[TestController][:foo].should == "original foo"
+      RailsIOC::Dependencies.controllers[TestController][:bar].should == "override bar"
+    end
   end
   
-  describe "loading dependencies file" do
-    before(:each) do
-      GlobalCounter.zero!
-    end
-    
+  describe "loading dependencies file" do    
     it "reloads the file if cache_classes is false" do
       Rails.env = "incrementing_test"
       Rails.application.config.cache_classes = false
