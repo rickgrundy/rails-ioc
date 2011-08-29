@@ -11,6 +11,7 @@ module RailsIOC
       Dependencies.define do
         controller klass, dependencies
       end
+      dependencies.keys.each { |field| controller.class.send(:attr_reader, field) }
     end
   end
 end

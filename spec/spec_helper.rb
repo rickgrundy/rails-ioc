@@ -1,22 +1,16 @@
-class GlobalCounter
-  def self.zero!
-    @count = 0
-  end
-  
-  def self.increment!
-    @count += 1
-  end
-  
-  def self.count
-    @count
+module ActionController
+  class Base
+    def self.before_filter(method_name)
+      @@before_filter_method = method_name
+    end
+    
+    def trigger_before_filter!
+      self.send(@@before_filter_method)
+    end
   end
 end
 
-RSpec.configure do |config|
-  config.before(:each) do
-    GlobalCounter.zero!
-  end
-end
+class ExtendedController < ActionController::Base; end
 
 class AdHocObject  
   def initialize
@@ -37,9 +31,24 @@ Rails.application = AdHocObject.new
 Rails.application.config = AdHocObject.new
 Rails.root = File.expand_path("../fixtures", __FILE__)
 
-module ActionController
-  class Base
-    def self.before_filter(method_name); end 
+
+class GlobalCounter
+  def self.zero!
+    @count = 0
+  end
+  
+  def self.increment!
+    @count += 1
+  end
+  
+  def self.count
+    @count
+  end
+end
+
+RSpec.configure do |config|
+  config.before(:each) do
+    GlobalCounter.zero!
   end
 end
 

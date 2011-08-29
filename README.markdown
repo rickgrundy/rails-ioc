@@ -20,6 +20,13 @@
       @payment_gateway.process(params[:credit_card])
     end
   end
+
+  # spec/controllers/payments_controller_spec.rb
+  it "processes a succesful payment" do
+	controller_dependencies(payment_gateway: mock(PaymentGateway))
+    controller.payment_gateway.should_receive(:process).with("4111").and_return(true)
+	post :accept_payment, credit_card: "4111"
+  end
   ```
 
 ## Background
@@ -63,9 +70,8 @@ RailsIOC attempts to make these problems less painful for applications with comp
   @gateway.do_something!
   
   # RSpec:
-  @gateway = mock(Gateway)
-  @gateway.should_receive(:do_something!).and_return(12345)
-  controller_dependencies(gateway: @gateway)
+  controller_dependencies(gateway: mock(Gateway))
+  controller.gateway.should_receive(:do_something!).and_return(12345)
   ```
 
 ## Customise Dependencies Per-Environment

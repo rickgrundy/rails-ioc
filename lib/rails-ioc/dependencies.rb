@@ -3,7 +3,7 @@ module RailsIOC
     def self.reset!
       @dependencies = {}
       @controllers = {}
-      @loaded = false      
+      @loaded = false 
     end
     self.reset!
     

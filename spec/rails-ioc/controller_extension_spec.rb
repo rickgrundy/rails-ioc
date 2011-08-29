@@ -1,18 +1,6 @@
 require File.expand_path("../../spec_helper.rb", __FILE__)
 
-describe RailsIOC::ControllerExtension do
-  class ExtendedController    
-    def self.before_filter(method_name)
-      @@before_filter_method = method_name
-    end
-    
-    def trigger_before_filter!
-      self.send(@@before_filter_method)
-    end
-    
-    include RailsIOC::ControllerExtension
-  end
-  
+describe RailsIOC::ControllerExtension do  
   it "injects pre-defined dependencies" do        
     Rails.application.config.cache_classes = true
     RailsIOC::Dependencies.instance_variable_set :@loaded, true

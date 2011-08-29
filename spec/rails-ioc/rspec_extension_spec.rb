@@ -1,8 +1,9 @@
 require File.expand_path("../../spec_helper.rb", __FILE__)
 
 describe RailsIOC::RSpecExtension do
-  class MyController; end
-  def controller; MyController.new; end
+  def controller
+    @controller ||= ExtendedController.new
+  end
   
   describe "resetting dependencies between tests" do
     after(:each) do
@@ -18,8 +19,12 @@ describe RailsIOC::RSpecExtension do
     end
   end
   
-  it "provides a shorthand way to define controller dependencies" do
+  it "provides a shorthand way to define and expose controller dependencies" do    
+    Rails.application.config.cache_classes = true
+    RailsIOC::Dependencies.instance_variable_set :@loaded, true
+    
     controller_dependencies(who_am_i: "The Walrus")
-    RailsIOC::Dependencies.controllers[MyController][:who_am_i].should == "The Walrus"
+    controller.trigger_before_filter!
+    controller.who_am_i.should == "The Walrus"
   end
 end
