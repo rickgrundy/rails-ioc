@@ -83,7 +83,7 @@ RailsIOC attempts to make these problems less painful for applications with comp
       if Rails.env.production? 
         @gateway = RealPaymentGateway.new
       elsif Rails.env.staging? 
-        @gateway = RealPaymentGateway.new(:use_testing_url)
+        @gateway = RealPaymentGateway.new(use_testing_url: true)
       else
         @gateway = BogusPaymentGateway.new
       end
@@ -109,7 +109,7 @@ RailsIOC attempts to make these problems less painful for applications with comp
     prototype :payment_gateway, RealPaymentGateway
     prototype :credit_card_validator, RealCardValidator
     
-    controller MyController, {
+    controller PaymentsController, {
       gateway: ref(:payment_gateway)
       credit_card_validator: ref(:credit_card_validator)
     }
@@ -119,8 +119,8 @@ RailsIOC attempts to make these problems less painful for applications with comp
   RailsIOC::Dependencies.define do
     inherit_environment(:production)
     
-    controller MyController, {
-      gateway: prototype(:payment_gateway, RealPaymentGateway, :use_test_url)
+    controller PaymentsController, {
+      gateway: prototype(:payment_gateway, RealPaymentGateway, use_testing_url: true)
     }
   end
 
@@ -128,7 +128,7 @@ RailsIOC attempts to make these problems less painful for applications with comp
   RailsIOC::Dependencies.define do
     inherit_environment(:production)
   
-    controller MyController, {
+    controller PaymentsController, {
       gateway: singleton(BogusPaymentGateway),
       credit_card_validator: singleton(BogusCardValidator)
     }
