@@ -23,9 +23,10 @@
 
   # spec/controllers/payments_controller_spec.rb
   it "processes a succesful payment" do
-	controller_dependencies(payment_gateway: mock(PaymentGateway))
+    controller_dependencies(payment_gateway: mock(PaymentGateway))
     controller.payment_gateway.should_receive(:process).with("4111").and_return(true)
-	post :accept_payment, credit_card: "4111"
+    post :accept_payment, credit_card: "4111"
+    response.status.should == 200
   end
   ```
 
