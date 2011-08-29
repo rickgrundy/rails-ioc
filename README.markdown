@@ -1,14 +1,10 @@
 ## Quickstart
 
-Gemfile:
-
   ```ruby
+  # Gemfile:
   gem 'rails-ioc'
-  ```
 
-config/dependencies/development.rb:
-
-  ```ruby
+  # config/dependencies/development.rb:
   RailsIOC::Dependencies.define do     
     prototype :ccv, CreditCardValidator, "Visa", "Mastercard"
     prototype :payment_gateway, DummyPaymentGateway, ref(:ccv)
@@ -17,11 +13,8 @@ config/dependencies/development.rb:
       payment_gateway: ref(:payment_gateway),
     }
   end   
-  ```
-    
-app/controllers/payments_controller.rb:
 
-  ```ruby
+  # app/controllers/payments_controller.rb:
   class PaymentsController < ApplicationController
     def accept_payment
       @payment_gateway.process(params[:credit_card])
@@ -49,11 +42,11 @@ RailsIOC attempts to make these problems less painful for applications with comp
 ### Before
     
   ```ruby
-  #Controller
+  # Controller:
   @gateway = Gateway.new(ServiceA.new, ServiceB.new)
   @gateway.do_something!
   
-  #RSpec
+  # RSpec:
   @svc_a = mock(ServiceA)
   @svc_b = mock(ServiceB)
   ServiceA.stub(:new).and_return(@svc_a)
@@ -66,10 +59,10 @@ RailsIOC attempts to make these problems less painful for applications with comp
 ### After
 
   ```ruby
-  #Controller
+  # Controller:
   @gateway.do_something!
   
-  #RSpec
+  # RSpec:
   @gateway = mock(Gateway)
   @gateway.should_receive(:do_something!).and_return(12345)
   controller_dependencies(gateway: @gateway)
@@ -77,10 +70,9 @@ RailsIOC attempts to make these problems less painful for applications with comp
 
 ## Customise Dependencies Per-Environment
 ### Before
-
-PaymentController:
     
   ```ruby
+  # app/controllers/payments_controller.rb:
   class PaymentsController < ApplicationController
     def accept_payment
       if Rails.env.development? || Rails.env.test?
@@ -103,21 +95,16 @@ PaymentController:
 
 ### After
 
-
-app/controllers/payments_controller:
-
   ```ruby
+  # app/controllers/payments_controller:
   class PaymentsController < ApplicationController
     def accept_payment    
       card = @credit_card_validator.validate(params[:card])
       @gateway.process(card)
     end
   end
-  ```
     
-config/dependencies/production.rb:
-
-  ```ruby
+  # config/dependencies/production.rb:
   RailsIOC::Dependencies.define do
     prototype :payment_gateway, RealPaymentGateway
     prototype :credit_card_validator, RealCardValidator
@@ -127,11 +114,8 @@ config/dependencies/production.rb:
       credit_card_validator: ref(:credit_card_validator)
     }
   end
-  ```
-        
-config/dependencies/staging.rb:
 
-  ```ruby
+  # config/dependencies/staging.rb:
   RailsIOC::Dependencies.define do
     inherit_environment(:production)
     
@@ -139,11 +123,8 @@ config/dependencies/staging.rb:
       gateway: prototype(:payment_gateway, RealPaymentGateway, :use_test_url)
     }
   end
-  ```
-    
-config/dependencies/development.rb:
 
-  ```ruby
+  # config/dependencies/development.rb:
   RailsIOC::Dependencies.define do
     inherit_environment(:production)
   
