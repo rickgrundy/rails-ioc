@@ -36,7 +36,7 @@ Still, having run into several Rails projects which dealt with dependencies beyo
 1. I really despise mocking calls to MyService#new to force a controller to use a stub implementation in a unit test.
 2. There is no clean way to switch dependencies out on a per-environment basis (to use the testable version of a payment gateway in the staging environment, for example).
 
-RailsIOC attempts to make these problems less painful for applications with complex interactions with external services by providing a lightweight way to define dependencies and inject them into ActionController. The patterns will be familiar to anyone who has used [Spring](http://www.springsource.org/documentation) or [Unity](http://msdn.microsoft.com/en-us/library/dd203319.aspx). Dependencies are defined in pure Ruby using a simple internal DSL. Where possible, RailsIOC enforces constructor injection. The exception to this rule is the creation of controllers, where it avoids interfering with Rails' own instantiation and injects dependencies as local @variables.
+RailsIOC attempts to make these problems less painful for applications with complex interactions with external services by providing a lightweight way to define dependencies and inject them into ActionController. The patterns will be familiar to anyone who has used [Spring](http://www.springsource.org/documentation) or [Unity](http://msdn.microsoft.com/en-us/library/dd203319.aspx). Dependencies are defined in pure Ruby using a simple internal DSL. Where possible, RailsIOC enforces constructor injection. The exception to this rule is the creation of controllers, where it avoids interfering with Rails' own instantiation and injects dependencies as @local_variables.
 
 ## Cleaner Testing
 ### Before
