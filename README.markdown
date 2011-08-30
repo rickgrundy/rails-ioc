@@ -6,8 +6,8 @@
 
   # config/dependencies/development.rb:
   RailsIOC::Dependencies.define do     
-    prototype :ccv, CreditCardValidator, "Visa", "Mastercard"
-    prototype :payment_gateway, DummyPaymentGateway, ref(:ccv)
+    prototype :card_validator,  CreditCardValidator, "Visa", "Mastercard"
+    prototype :payment_gateway, DummyPaymentGateway, ref(:card_validator)
   
     controller PaymentsController, {
       payment_gateway: ref(:payment_gateway),
@@ -24,19 +24,19 @@
 
 ## Background
 
-Inversion of control by dependency injection is widely used in large software systems and is generally accepted as being a "good idea". If the terms are unfamiliar, do some research before going any further. These are good places to start: 
+Inversion of control via dependency injection is widely used in large software systems and is generally accepted to be a "Good Thing". If the terms are unfamiliar these are good places to start reading: 
 
 - http://en.wikipedia.org/wiki/Inversion_of_control
 - http://martinfowler.com/articles/injection.html
 
-The practice as described in the articles above is not particularly common in Ruby applications. Jamis Buck, author of the erstwhile DI framework [Copland](http://copland.rubyforge.org) makes a [compelling argument](http://weblog.jamisbuck.org/2008/11/9/legos-play-doh-and-programming) against it. If you have to ask the question "will I need IOC for my next Rails app", the answer is almost certainly "No". The core components of a standard Rails app usually interact politely  and can generally be tested reasonably easily in most apps.
+The practice as described in the articles above is not particularly common in Ruby applications. Jamis Buck, author of the erstwhile DI framework [Copland](http://copland.rubyforge.org) makes a [compelling argument](http://weblog.jamisbuck.org/2008/11/9/legos-play-doh-and-programming) against it. If you have to ask the question "will I need IOC for my next Rails app", the answer is almost certainly "No". The core components of a standard Rails app usually interact politely and can generally be easily tested.
 
-Still, having run into several Rails projects which dealt with dependencies beyond a simple ActiveRecord database connection (payment gateways, email services, version control systems, image processing services and more) I realised that I was reminiscing fondly about Java and .NET's various containers for two reasons:
+Still, having run into several Rails projects which dealt with dependencies beyond an ActiveRecord database connection (payment gateways, email services, version control systems, image processing services and more) I realised that I was reminiscing fondly about Java and .NET's various containers for two reasons:
 
-1. I really hate mocking calls to MyService#new to force a controller to use a stub implementation in a unit test.
+1. I really despise mocking calls to MyService#new to force a controller to use a stub implementation in a unit test.
 2. There is no clean way to switch dependencies out on a per-environment basis (to use the testable version of a payment gateway in the staging environment, for example).
 
-RailsIOC attempts to make these problems less painful for applications with complex interactions with external services by providing a very lightweight way to define dependencies and inject them into ActionController. The patterns will be familiar to anyone who has used [Spring](http://www.springsource.org/documentation) or [Unity](http://msdn.microsoft.com/en-us/library/dd203319.aspx). Where possible, RailsIOC enforces constructor injection. The exception to this rule is the creation of controllers, where it avoids interfering with Rails' own instantiation and injects dependencies as local @variables.
+RailsIOC attempts to make these problems less painful for applications with complex interactions with external services by providing a lightweight way to define dependencies and inject them into ActionController. The patterns will be familiar to anyone who has used [Spring](http://www.springsource.org/documentation) or [Unity](http://msdn.microsoft.com/en-us/library/dd203319.aspx). Dependencies are defined in pure Ruby using a simple internal DSL. Where possible, RailsIOC enforces constructor injection. The exception to this rule is the creation of controllers, where it avoids interfering with Rails' own instantiation and injects dependencies as local @variables.
 
 ## Cleaner Testing
 ### Before
@@ -68,7 +68,7 @@ RailsIOC attempts to make these problems less painful for applications with comp
   controller_dependencies(gateway: @gateway)
   ```
 
-## Customise Dependencies Per-Environment
+## Customise and Override Dependencies Per-Environment
 ### Before
     
   ```ruby
@@ -106,11 +106,11 @@ RailsIOC attempts to make these problems less painful for applications with comp
     
   # config/dependencies/production.rb:
   RailsIOC::Dependencies.define do
-    prototype :payment_gateway, RealPaymentGateway
+    prototype :payment_gateway,       RealPaymentGateway
     prototype :credit_card_validator, RealCardValidator
     
     controller PaymentsController, {
-      gateway: ref(:payment_gateway)
+      gateway:               ref(:payment_gateway)
       credit_card_validator: ref(:credit_card_validator)
     }
   end
@@ -120,7 +120,7 @@ RailsIOC attempts to make these problems less painful for applications with comp
     inherit_environment(:production)
     
     controller PaymentsController, {
-      gateway: prototype(:payment_gateway, RealPaymentGateway, use_testing_url: true)
+      gateway: prototype(RealPaymentGateway, use_testing_url: true)
     }
   end
 
@@ -129,7 +129,7 @@ RailsIOC attempts to make these problems less painful for applications with comp
     inherit_environment(:production)
   
     controller PaymentsController, {
-      gateway: singleton(BogusPaymentGateway),
+      gateway:               singleton(BogusPaymentGateway),
       credit_card_validator: singleton(BogusCardValidator)
     }
   end
