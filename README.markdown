@@ -133,7 +133,7 @@ RailsIOC attempts to make these problems less painful for applications with comp
   RailsIOC::Dependencies.define do
     inherit_environment(:production)
   
-    singleton :payment_gateway, BogusPaymentGateway),
+    singleton :payment_gateway, BogusPaymentGateway
     singleton :credit_card_validator, BogusCardValidator
   end
   ```
