@@ -11,15 +11,15 @@ describe RailsIOC::RSpecExtension do
     end
     
     it "resets before this test" do
-      -> { RailsIOC::Dependencies.ref(:defined?) }.should raise_error RailsIOC::MissingReferenceError
+      -> { RailsIOC::Dependencies.ref(:defined?).build }.should raise_error RailsIOC::MissingReferenceError
     end
     
     it "also resets before this test" do
-      -> { RailsIOC::Dependencies.ref(:defined?) }.should raise_error RailsIOC::MissingReferenceError
+      -> { RailsIOC::Dependencies.ref(:defined?).build }.should raise_error RailsIOC::MissingReferenceError
     end
   end
   
-  it "provides a shorthand way to define and expose controller dependencies" do    
+  it "provides a shorthand way to define and expose controller depend3encies" do    
     Rails.application.config.cache_classes = true
     RailsIOC::Dependencies.instance_variable_set :@loaded, true
     

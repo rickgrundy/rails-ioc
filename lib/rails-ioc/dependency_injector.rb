@@ -5,11 +5,20 @@ module RailsIOC
     end
     
     def inject(dependencies)
-      dependencies.each do |field, value|
-        value = value.call if value.is_a?(Proc)
-        @target.instance_variable_set("@#{field}", value)
+      dependencies.each do |field, dependency|
+        @target.instance_variable_set("@#{field}", call_lazy_initializers(dependency))
       end
       @target
+    end
+    
+    private
+    
+    def call_lazy_initializers(dependency)
+      if dependency.respond_to?(:build)
+        call_lazy_initializers(dependency.build)
+      else
+        dependency
+      end
     end
   end
 end

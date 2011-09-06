@@ -14,10 +14,10 @@ describe RailsIOC::DependencyConstructor do
     instance.bar.should == :abc
   end
   
-  it "calls any procs which are provided in constructor args" do
-    returns_7 = -> { 3 + 4 }
+  it "builds any dependencies which are provided in constructor args" do
+    returns_7 = RailsIOC::Prototype.new(String, ["7"])
     instance = RailsIOC::DependencyConstructor.new(ConstructorTestClass, []).construct([returns_7, :abc])
-    instance.foo.should == 7
+    instance.foo.should == "7"
     instance.bar.should == :abc
   end
   

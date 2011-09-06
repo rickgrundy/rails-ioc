@@ -115,7 +115,7 @@ RailsIOC attempts to make these problems less painful for applications with comp
   RailsIOC::Dependencies.define do
     prototype :payment_gateway,       RealPaymentGateway
     prototype :credit_card_validator, RealCardValidator
-    
+
     controller PaymentsController, {
       gateway:               ref(:payment_gateway)
       credit_card_validator: ref(:credit_card_validator)
@@ -126,18 +126,14 @@ RailsIOC attempts to make these problems less painful for applications with comp
   RailsIOC::Dependencies.define do
     inherit_environment(:production)
     
-    controller PaymentsController, {
-      gateway: prototype(RealPaymentGateway, use_testing_url: true)
-    }
+    prototype :payment_gateway, RealPaymentGateway, {use_testing_url: true}
   end
 
   # config/dependencies/development.rb:
   RailsIOC::Dependencies.define do
     inherit_environment(:production)
   
-    controller PaymentsController, {
-      gateway:               singleton(BogusPaymentGateway),
-      credit_card_validator: singleton(BogusCardValidator)
-    }
+    singleton :payment_gateway, BogusPaymentGateway),
+    singleton :credit_card_validator, BogusCardValidator
   end
   ```

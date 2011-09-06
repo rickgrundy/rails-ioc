@@ -29,24 +29,23 @@ module RailsIOC
     end
   
     def self.singleton(*args)
-      store_dependency(args) do |klass, constructor_args|
-        if klass.instance_of?(Class)
-          DependencyConstructor.new(klass, caller).construct(constructor_args)
+      store_dependency(args) do |klass_or_value, constructor_args|
+        if klass_or_value.instance_of?(Class)
+          RailsIOC::Singleton.new(klass_or_value, constructor_args)
         else
-          klass
+          klass_or_value
         end
       end
     end
   
     def self.prototype(*args)
       store_dependency(args) do |klass, constructor_args|
-        definition_backtrace = caller
-        -> { DependencyConstructor.new(klass, definition_backtrace).construct(constructor_args) }
+        RailsIOC::Prototype.new(klass, constructor_args)
       end
     end
   
     def self.ref(name)
-      @dependencies[name] || raise(MissingReferenceError.new(name))
+      RailsIOC::Reference.new(name, @dependencies)
     end
     
     def self.controllers
