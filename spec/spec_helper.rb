@@ -1,11 +1,11 @@
 module ActionController
   class Base
-    def self.before_filter(method_name)
-      @@before_filter_method = method_name
+    def self.before_action(method_name)
+      @@before_action_method = method_name
     end
     
-    def trigger_before_filter!
-      self.send(@@before_filter_method)
+    def trigger_before_action!
+      self.send(@@before_action_method)
     end
   end
 end
