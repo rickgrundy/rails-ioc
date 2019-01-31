@@ -24,7 +24,7 @@ describe RailsIOC::RSpecExtension do
     RailsIOC::Dependencies.instance_variable_set :@loaded, true
     
     controller_dependencies(who_am_i: "The Walrus")
-    controller.trigger_before_filter!
+    controller.trigger_before_action!
     controller.who_am_i.should == "The Walrus"
   end
 end

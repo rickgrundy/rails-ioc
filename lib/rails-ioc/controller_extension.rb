@@ -1,7 +1,7 @@
 module RailsIOC
   module ControllerExtension
     def self.included(controller)
-      controller.before_filter :inject_dependencies
+      controller.before_action :inject_dependencies
     end
     
     def inject_dependencies

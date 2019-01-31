@@ -13,7 +13,7 @@ describe RailsIOC::ControllerExtension do
     end
     
     controller = ExtendedController.new    
-    controller.trigger_before_filter!
+    controller.trigger_before_action!
     controller.instance_variable_get(:@a_number).should == 123
     controller.instance_variable_get(:@a_string).should == "Hello"
   end

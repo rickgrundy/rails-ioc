@@ -109,7 +109,7 @@ describe RailsIOC::Dependencies do
   end
   
   describe "controllers" do
-    it "stores controller dependencies for later injection by Rails' before_filter" do      
+    it "stores controller dependencies for later injection by Rails' before_action" do      
       RailsIOC::Dependencies.define do
         singleton :first_node, TestListNode
         
